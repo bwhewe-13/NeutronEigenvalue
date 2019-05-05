@@ -200,57 +200,6 @@ def ridder(f,a,b,epsilon=1.0e-6):
 #         print('temp value',d)
     print('It took',iterations,'iterations')
     return d #return c
-
-import numpy as np
-import time
-def inversePower(I,A,B,groups,epsilon=1.0e-8, LOUD=0, tracker=0):
-    ''' Solve the generalized eigenvalue problem 
-    Ax = (1/k)Bx using inverse power iteration
-    Inputs:
-        I: the number of cells, (I+1) = N
-        A: left-side (groups*N)x(groups*N) matrix
-        B: right-side (groups*N)x(groups*N) matrix
-        groups: for dimensional purposes 
-    Outputs:
-        l_new: the smallest eigenvalue of the problem
-        phi: the associated eigenvector, broken up into Nxgroups matrix
-    '''
-    assert(A.shape == B.shape)
-    
-    # Initial Guess of x0
-    x0 = [] 
-    for i in range(groups*(I+1)):
-        i = np.random.random()
-        x0 = np.append(x0,i)
-
-    # Normalize x0
-    l_old = np.linalg.norm(x0)
-    x0 /= l_old
-
-    converged = 0 
-    iteration = 1
-    if tracker:
-        trace = np.array([])
-    while not(converged):
-        if tracker:
-            trace = np.append(trace,1/l_old)
-        x1 = np.linalg.solve(A,np.dot(B,x0))
-        l_new = np.linalg.norm(x1)/np.linalg.norm(x0)
-        x1 = x1/np.linalg.norm(x1)
-        phi_change = np.linalg.norm(x1-x0)
-        k_change = np.fabs(l_new-l_old)
-        converged = ( k_change < epsilon) and (phi_change < epsilon)
-        x0 = x1
-        l_old = l_new
-        if (LOUD>0):
-            print('Iteration:',iteration,'\tMagnitude of l',l_new,"change in phi",phi_change, "k change ", k_change)
-        iteration += 1
-    phi = np.reshape(x1,(I+1,groups),order='F')
-    if (LOUD==-1):
-        print('Iteration:',iteration,'\tMagnitude of l',l_new)
-    if tracker:
-        return phi, 1/l_new,trace
-    return phi, 1/l_new
     
 def get_pos_from_i_g(i,g,I,G): #change the cell position
     return g*I+i
